@@ -19,12 +19,12 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'dev') {
+                    if (env.GIT_BRANCH == 'origin/dev') {
                         sh './build.sh dev'
-                    } else if (env.BRANCH_NAME == 'master') {
+                    } else if (env.GIT_BRANCH == 'origin/master') {
                         sh './build.sh prod'
                     } else {
-                        error "Unsupported branch: ${env.BRANCH_NAME}"
+                        error "Unsupported branch: ${env.GIT_BRANCH}"
                     }
                 }
             }
@@ -33,11 +33,11 @@ pipeline {
         stage('Tag Docker Image') {
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'dev') {
+                    if (env.GIT_BRANCH == 'origin/dev') {
                         sh """
                             docker tag devops-build-app:dev ${DEV_IMAGE}
                         """
-                    } else if (env.BRANCH_NAME == 'master') {
+                    } else if (env.GIT_BRANCH == 'origin/master') {
                         sh """
                             docker tag devops-build-app:prod ${PROD_IMAGE}
                         """
@@ -60,9 +60,9 @@ pipeline {
                     '''
 
                     script {
-                        if (env.BRANCH_NAME == 'dev') {
+                        if (env.GIT_BRANCH == 'origin/dev') {
                             sh "docker push ${DEV_IMAGE}"
-                        } else if (env.BRANCH_NAME == 'master') {
+                        } else if (env.GIT_BRANCH == 'origin/master') {
                             sh "docker push ${PROD_IMAGE}"
                         }
                     }
@@ -74,7 +74,7 @@ pipeline {
             steps {
                 sshagent(credentials: ['production-server-ssh']) {
                     script {
-                        def image = env.BRANCH_NAME == 'dev' ? env.DEV_IMAGE : env.PROD_IMAGE
+                        def image = env.GIT_BRANCH == 'origin/dev' ? env.DEV_IMAGE : env.PROD_IMAGE
 
                         sh """
                             ssh -o StrictHostKeyChecking=no ${APP_SERVER} '
@@ -96,11 +96,11 @@ pipeline {
 
     post {
         success {
-            echo "CI/CD pipeline completed successfully for ${env.BRANCH_NAME}"
+            echo "CI/CD pipeline completed successfully for ${env.GIT_BRANCH}"
         }
 
         failure {
-            echo "CI/CD pipeline failed for ${env.BRANCH_NAME}"
+            echo "CI/CD pipeline failed for ${env.GIT_BRANCH}"
         }
     }
 }
