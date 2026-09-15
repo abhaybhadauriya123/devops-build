@@ -85,7 +85,8 @@ pipeline {
                                   --restart unless-stopped \
                                   -p 80:80 \
                                   ${image} &&
-                                curl -f http://localhost
+                                sleep 15
+				curl -f http://localhost
                             '
                         """
                     }
