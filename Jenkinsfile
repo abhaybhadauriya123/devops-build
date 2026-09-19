@@ -5,7 +5,7 @@ pipeline {
         DOCKERHUB_USER = 'abhaytheinfinity'
         DEV_IMAGE = 'abhaytheinfinity/devops-build-dev:dev'
         PROD_IMAGE = 'abhaytheinfinity/devops-build-prod:prod'
-        APP_SERVER = 'ubuntu@3.110.90.239'
+        APP_SERVER = 'ubuntu@52.66.237.200'
     }
 
     stages {
